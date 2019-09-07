@@ -22,6 +22,12 @@ namespace expense.Controllers
             return await _context.ListAsync();
         }
 
+        [HttpGet("trip/{tripId}")]
+        public async Task<ActionResult<IEnumerable<ExpenseItem>>> GetExpenseItemsForTrip(string tripId)
+        {
+            return await _context.ListAsyncByTripId(tripId);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ExpenseItem>> GetExpenseItem(string id)
         {
