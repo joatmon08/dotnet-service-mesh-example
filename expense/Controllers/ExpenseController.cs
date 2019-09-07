@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Expense.Models;
 
@@ -11,73 +9,61 @@ namespace expense.Controllers
     [ApiController]
     public class ExpenseController : ControllerBase
     {
-        private readonly ExpenseContext _context;
+        private readonly IExpenseContext _context;
 
-        public ExpenseController(ExpenseContext context)
+        public ExpenseController(IExpenseContext context)
         {
             _context = context;
-
-            if (_context.ExpenseItems.Count() == 0)
-            {
-                _context.ExpenseItems.Add(new ExpenseItem { Name = "Seattle" });
-                _context.SaveChanges();
-            }
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ExpenseItem>>> GetExpenseItems()
         {
-            return await _context.ExpenseItems.ToListAsync();
+            return await _context.ListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ExpenseItem>> GetExpenseItems(long id)
+        public async Task<ActionResult<ExpenseItem>> GetExpenseItem(string id)
         {
-            var expenseItem = await _context.ExpenseItems.FindAsync(id);
-
+            var expenseItem = await _context.GetExpense(id);
             if (expenseItem == null)
             {
                 return NotFound();
             }
-
             return expenseItem;
         }
 
         [HttpPost]
         public async Task<ActionResult<ExpenseItem>> PostExpenseItem(ExpenseItem item)
         {
-            _context.ExpenseItems.Add(item);
-            await _context.SaveChangesAsync();
+            await _context.AddExpenseItem(item);
 
             return CreatedAtAction(nameof(GetExpenseItems), new { id = item.Id }, item);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutExpenseItem(long id, ExpenseItem item)
+        public async Task<IActionResult> PutExpenseItem(string id, ExpenseItem item)
         {
             if (id != item.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(item).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await _context.UpdateExpenseItem(item);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteExpenseItem(long id)
+        public async Task<IActionResult> DeleteExpenseItem(string id)
         {
-            var todoItem = await _context.ExpenseItems.FindAsync(id);
-
-            if (todoItem == null)
+            var item = await _context.GetExpense(id);
+            if (item == null)
             {
                 return NotFound();
             }
 
-            _context.ExpenseItems.Remove(todoItem);
-            await _context.SaveChangesAsync();
+            await _context.DeleteExpenseItem(item);
 
             return NoContent();
         }

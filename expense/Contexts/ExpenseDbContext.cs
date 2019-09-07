@@ -1,7 +1,7 @@
 using Expense.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Expense.Data
+namespace Expense.Contexts
 {
     public class ExpenseDbContext : DbContext
     {
