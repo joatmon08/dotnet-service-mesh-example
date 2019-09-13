@@ -22,7 +22,7 @@ namespace report
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-      services.AddTransient<IReportContext>(s => new ReportContext(new ExpenseClient("http://localhost:5001")));
+      services.AddTransient<IReportContext>(s => new ReportContext(new ExpenseClient(Configuration.GetConnectionString("Expenses"))));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
