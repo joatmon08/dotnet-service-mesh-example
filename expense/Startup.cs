@@ -40,7 +40,6 @@ namespace Expense
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
