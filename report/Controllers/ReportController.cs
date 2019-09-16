@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Report.Models;
+using OpenTracing;
 
 namespace expense.Controllers
 {
@@ -9,23 +10,26 @@ namespace expense.Controllers
     public class ReportController : ControllerBase
     {
         private readonly IReportContext _context;
+        private readonly ITracer _tracer;
 
-        public ReportController(IReportContext context)
+        public ReportController(IReportContext context, ITracer tracer)
         {
             _context = context;
+            _tracer = tracer;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ReportTotal>> GetReportForTrip(string id)
         {
-            var report = await _context.GetReportTotal(id);
-
-            if (report == null)
+            using (IScope scope = _tracer.BuildSpan("report-total").StartActive(finishSpanOnDispose: true))
             {
-                return NotFound();
+                var report = await _context.GetReportTotal(id);
+                if (report == null)
+                {
+                    return NotFound();
+                }
+                return report;
             }
-
-            return report;
         }
 
     }
