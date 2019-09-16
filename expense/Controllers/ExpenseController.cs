@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Expense.Models;
+using OpenTracing;
 
 namespace expense.Controllers
 {
@@ -10,41 +11,55 @@ namespace expense.Controllers
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseContext _context;
+        private readonly ITracer _tracer;
 
-        public ExpenseController(IExpenseContext context)
+        public ExpenseController(IExpenseContext context, ITracer tracer)
         {
             _context = context;
+            _tracer = tracer;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ExpenseItem>>> GetExpenseItems()
         {
-            return await _context.ListAsync();
+            using (IScope scope = _tracer.BuildSpan("expense-list").StartActive(finishSpanOnDispose: true))
+            {
+                return await _context.ListAsync();
+            }
         }
 
         [HttpGet("trip/{tripId}")]
         public async Task<ActionResult<IEnumerable<ExpenseItem>>> GetExpenseItemsForTrip(string tripId)
         {
-            return await _context.ListAsyncByTripId(tripId);
+            using (IScope scope = _tracer.BuildSpan("expense-list-by-trip-id").StartActive(finishSpanOnDispose: true))
+            {
+                var items = await _context.ListAsyncByTripId(tripId);
+                return items;
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ExpenseItem>> GetExpenseItem(string id)
         {
-            var expenseItem = await _context.GetExpense(id);
-            if (expenseItem == null)
+            using (IScope scope = _tracer.BuildSpan("expense-get-by-id").StartActive(finishSpanOnDispose: true))
             {
-                return NotFound();
+                var expenseItem = await _context.GetExpense(id);
+                if (expenseItem == null)
+                {
+                    return NotFound();
+                }
+                return expenseItem;
             }
-            return expenseItem;
         }
 
         [HttpPost]
         public async Task<ActionResult<ExpenseItem>> PostExpenseItem(ExpenseItem item)
         {
-            await _context.AddExpenseItem(item);
-
-            return CreatedAtAction(nameof(GetExpenseItems), new { id = item.Id }, item);
+            using (IScope scope = _tracer.BuildSpan("expense-create").StartActive(finishSpanOnDispose: true))
+            {
+                await _context.AddExpenseItem(item);
+                return CreatedAtAction(nameof(GetExpenseItems), new { id = item.Id }, item);
+            }
         }
 
         [HttpPut("{id}")]
@@ -55,23 +70,26 @@ namespace expense.Controllers
                 return BadRequest();
             }
 
-            await _context.UpdateExpenseItem(item);
-
-            return NoContent();
+            using (IScope scope = _tracer.BuildSpan("expense-update").StartActive(finishSpanOnDispose: true))
+            {
+                await _context.UpdateExpenseItem(item);
+                return NoContent();
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExpenseItem(string id)
         {
-            var item = await _context.GetExpense(id);
-            if (item == null)
+            using (IScope scope = _tracer.BuildSpan("expense-delete").StartActive(finishSpanOnDispose: true))
             {
-                return NotFound();
+                var item = await _context.GetExpense(id);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                await _context.DeleteExpenseItem(item);
+                return NoContent();
             }
-
-            await _context.DeleteExpenseItem(item);
-
-            return NoContent();
         }
     }
 }
