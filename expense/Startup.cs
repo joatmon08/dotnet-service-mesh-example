@@ -13,6 +13,7 @@ using Jaeger.Senders;
 using Jaeger;
 using OpenTracing.Contrib.NetCore.CoreFx;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Expense
 {
@@ -40,17 +41,26 @@ namespace Expense
         var reporter = new RemoteReporter.Builder()
                   .WithSender(new UdpSender(Configuration.GetConnectionString("JaegerURL"), Int32.Parse(Configuration.GetConnectionString("JaegerPort")), 0))
                   .Build();
+        var loggerFactory = new LoggerFactory().AddConsole();
         var tracer = new Tracer.Builder(serviceName)
-                                      .WithSampler(sampler)
-                                      .WithReporter(reporter)
-                                      .Build();
+          .WithLoggerFactory(loggerFactory)
+          .WithSampler(sampler)
+          .WithReporter(reporter)
+          .Build();
 
         return tracer;
       });
+
+      services.Configure<HttpHandlerDiagnosticOptions>(options => 
+      { 
+        options.IgnorePatterns.Add(request => request.RequestUri.ToString().Contains(Configuration.GetConnectionString("JaegerURL"))); 
+      }); 
+      /*
       services.Configure<HttpHandlerDiagnosticOptions>(options =>
       {
         options.IgnorePatterns.Add(x => !x.RequestUri.IsLoopback);
       });
+      */
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

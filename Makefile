@@ -1,7 +1,7 @@
 build:
 	docker build -t joatmon08/expense-db:mssql database/
 	docker build -t joatmon08/expense:dotnet expense/
-	docker build -t joatmon08/report:dotnet report/
+	docker build -t joatmon08/report:dotnet -f report/Dockerfile .
 
 jaeger-run:
 	docker run --rm -d -p 6831:6831/udp -p 6832:6832/udp -p 16686:16686 --name jaeger jaegertracing/all-in-one:latest --log-level=debug
