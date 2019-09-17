@@ -21,7 +21,7 @@ namespace expense.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ReportTotal>> GetReportForTrip(string id)
         {
-            using (IScope scope = _tracer.BuildSpan("report-total").StartActive(finishSpanOnDispose: true))
+            using (IScope scope = _tracer.BuildSpan("report-total").WithTag("tripId", id).StartActive(finishSpanOnDispose: true))
             {
                 var report = await _context.GetReportTotal(id);
                 if (report == null)

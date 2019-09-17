@@ -31,7 +31,7 @@ namespace expense.Controllers
         [HttpGet("trip/{tripId}")]
         public async Task<ActionResult<IEnumerable<ExpenseItem>>> GetExpenseItemsForTrip(string tripId)
         {
-            using (IScope scope = _tracer.BuildSpan("expense-list-by-trip-id").StartActive(finishSpanOnDispose: true))
+            using (IScope scope = _tracer.BuildSpan("expense-list-by-trip-id").WithTag("tripId", tripId).StartActive(finishSpanOnDispose: true))
             {
                 var items = await _context.ListAsyncByTripId(tripId);
                 return items;
@@ -41,7 +41,7 @@ namespace expense.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ExpenseItem>> GetExpenseItem(string id)
         {
-            using (IScope scope = _tracer.BuildSpan("expense-get-by-id").StartActive(finishSpanOnDispose: true))
+            using (IScope scope = _tracer.BuildSpan("expense-get-by-id").WithTag("id", id).StartActive(finishSpanOnDispose: true))
             {
                 var expenseItem = await _context.GetExpense(id);
                 if (expenseItem == null)
