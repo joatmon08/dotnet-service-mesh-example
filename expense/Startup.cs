@@ -32,6 +32,7 @@ namespace Expense
           opt.UseSqlServer(Configuration.GetConnectionString("ExpensesDatabase")));
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
       services.AddScoped<IExpenseContext, ExpenseContext>();
+      services.AddTransient<IVersionContext>(s => new VersionContext(Configuration.GetValue<string>("version")));
       services.AddOpenTracing();
       services.AddSingleton<ITracer>(serviceProvider =>
       {
