@@ -28,30 +28,30 @@ services:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
       SERVICE_CONFIG: /config/expense_db.hcl
-      CENTRAL_CONFIG_DIR: /central_config
     volumes:
       - "./service_config:/config"
-      - "./central_config:/central_config"
     command: ["consul", "connect", "envoy","-sidecar-for", "expense-db"]
     network_mode: "service:expense-db"
 
-  expense:
+  expense-v1:
     image: joatmon08/expense:dotnet
     networks:
       vpcbr:
         ipv4_address: 10.5.0.4
     ports:
       - 5001:5001
-  expense_proxy:
+  expense_proxy_v1:
     image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
       SERVICE_CONFIG: /config/expense_v1.hcl
+      CENTRAL_CONFIG_DIR: /central_config
     volumes:
       - "./service_config:/config"
+      - "./central_config:/central_config"
     command: ["consul", "connect", "envoy","-sidecar-for", "expense-v1"]
-    network_mode: "service:expense"
+    network_mode: "service:expense-v1"
 
   report:
     image: joatmon08/report:dotnet
