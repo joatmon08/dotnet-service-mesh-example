@@ -38,7 +38,7 @@ namespace Report
         string serviceName = serviceProvider.GetRequiredService<IHostingEnvironment>().ApplicationName;
         var sampler = new ConstSampler(sample: true);
         var reporter = new RemoteReporter.Builder()
-                  .WithSender(new UdpSender(Configuration.GetConnectionString("JaegerURL"), Int32.Parse(Configuration.GetConnectionString("JaegerPort")), 0))
+                  .WithSender(new HttpSender(Configuration.GetConnectionString("Jaeger")))
                   .Build();
         var tracer = new Tracer.Builder(serviceName)
                                       .WithSampler(sampler)
@@ -49,7 +49,7 @@ namespace Report
       });
       services.Configure<HttpHandlerDiagnosticOptions>(options => 
       { 
-        options.IgnorePatterns.Add(request => request.RequestUri.ToString().Contains(Configuration.GetConnectionString("JaegerURL"))); 
+        options.IgnorePatterns.Add(request => Configuration.GetConnectionString("Jaeger").Contains(request.RequestUri.ToString()));
       });
     }
 

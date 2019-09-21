@@ -6,5 +6,6 @@ namespace Report.Models
     public interface IReportContext
     {
          Task<ReportTotal> GetReportTotal(string tripId);
+         Task<string> GetExpenseVersion();
     }
 }

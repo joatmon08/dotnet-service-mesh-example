@@ -5,7 +5,7 @@ using OpenTracing;
 
 namespace expense.Controllers
 {
-    [Route("api/[controller]/trip")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ReportController : ControllerBase
     {
@@ -18,7 +18,16 @@ namespace expense.Controllers
             _tracer = tracer;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("expense/version")]
+        public async Task<ActionResult<string>> GetVersion()
+        {
+            using (IScope scope = _tracer.BuildSpan("report-expense-version").StartActive(finishSpanOnDispose: true))
+            {
+                return await _context.GetExpenseVersion();
+            }
+        }
+
+        [HttpGet("trip/{id}")]
         public async Task<ActionResult<ReportTotal>> GetReportForTrip(string id)
         {
             using (IScope scope = _tracer.BuildSpan("report-total").WithTag("tripId", id).StartActive(finishSpanOnDispose: true))

@@ -14,10 +14,15 @@ namespace Report.Contexts
 
     public async Task<ReportTotal> GetReportTotal(string tripId)
     {
-
       var items = await _expenseClient.GetExpensesForTrip(tripId);
       return CalculateTotal(tripId, items);
     }
+    
+    public async Task<string> GetExpenseVersion()
+    {
+      return await _expenseClient.GetExpenseVersion();
+    }
+
 
     public ReportTotal CalculateTotal(string tripId, IList<ExpenseItem> items)
     {
