@@ -1,4 +1,5 @@
 using Expense.Models;
+using System.Threading.Tasks;
 
 namespace Expense.Contexts
 {
@@ -10,8 +11,13 @@ namespace Expense.Contexts
         {
             _version = version;
         }
+
+        public async Task<string> GetVersion() {
+           return await Task.Run(() => ReturnVersion());
+        }
+
         
-        public string GetVersion()
+        public string ReturnVersion()
         {
           return _version;
         }

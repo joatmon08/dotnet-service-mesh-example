@@ -19,7 +19,7 @@ namespace expense.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> Version()
         {
-            return _context.GetVersion();
+            return await _context.GetVersion();
         }
     }
 }

@@ -23,5 +23,9 @@ namespace Expense.Client
       var result = await client.GetStringAsync(_url + "/api/expense/trip/" + tripId);
       return JsonConvert.DeserializeObject<List<ExpenseItem>>(result);
     }
+
+    public async Task<string> GetExpenseVersion() {
+      return await client.GetStringAsync(_url + "/api");
+    }
   }
 }
