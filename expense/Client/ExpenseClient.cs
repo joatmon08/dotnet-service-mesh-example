@@ -14,18 +14,17 @@ namespace Expense.Client
 
     public ExpenseClient(string url)
     {
-      client.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
       _url = url;
     }
 
     public async Task<List<ExpenseItem>> GetExpensesForTrip(string tripId) {
-      var result = await client.GetStringAsync(_url + "/api/expense/trip/" + tripId);
+      var result = await client.GetStringAsync(_url + "/api/expense/trip/" + tripId).ConfigureAwait(false);
       return JsonConvert.DeserializeObject<List<ExpenseItem>>(result);
     }
 
     public async Task<string> GetExpenseVersion() {
-      return await client.GetStringAsync(_url + "/api");
+      var result = await client.GetStringAsync(_url + "/api").ConfigureAwait(false);
+      return result.ToString();
     }
   }
 }

@@ -13,6 +13,10 @@ namespace Report
     public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
             .UseUrls("http://*:5002")
-            .UseStartup<Startup>();
+            .UseStartup<Startup>()
+            .ConfigureKestrel((context, options) =>
+            {
+                options.Limits.MaxRequestHeadersTotalSize = 1048576;
+            });
   }
 }
