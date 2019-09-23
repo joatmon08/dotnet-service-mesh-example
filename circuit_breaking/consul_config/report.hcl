@@ -4,11 +4,11 @@ service {
   port= 5002
   connect { 
     sidecar_service {
-      port = 20000
+      port = 19000
 
   		checks {
         name = "Connect Sidecar Listening"
-        tcp = "10.5.0.5:20000"
+        tcp = "10.5.0.5:19000"
 			  interval = "10s"
       }
 
@@ -109,8 +109,7 @@ service {
                                     "timeout": "6s",
                                     "retry_policy": {
                                       "retry_on": "5xx",
-                                      "num_retries": 5,
-                                      "per_try_timeout": "2s"
+                                      "num_retries": 5
                                     }
                                   }
                                 }

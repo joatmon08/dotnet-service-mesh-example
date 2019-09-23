@@ -3,9 +3,9 @@ services:
 
   consul:
     image: consul:1.6.1
-    command: ["consul","agent","-config-file=/config/consul.hcl","-config-dir=/config"]
+    command: ["consul","agent","-config-file=/config/consul-single-dc.hcl","-config-dir=/config"]
     volumes:
-      - "./circuit_breaking/consul_config:/config"
+      - "./consul_config:/config"
     ports:
       - 8500:8500
     networks:
@@ -22,11 +22,15 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Testing!123
-  expensedb_envoy:
-    image: envoyproxy/envoy-alpine:v1.9.1
-    command: ["envoy","-c","/config/expense_db_envoy.json"]
+  expensedb_proxy:
+    image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
+    environment:
+      CONSUL_HTTP_ADDR: 10.5.0.2:8500
+      CONSUL_GRPC_ADDR: 10.5.0.2:8502
+      SERVICE_CONFIG: /config/expense_db.hcl
     volumes:
-      - "./circuit_breaking/envoy_config:/config"
+      - "./circuit_breaking/consul_config:/config"
+    command: ["consul", "connect", "envoy","-sidecar-for", "expense-db"]
     network_mode: "service:expense-db"
 
   expense:
@@ -37,10 +41,14 @@ services:
     ports:
       - 5001:5001
   expense_proxy:
-    image: envoyproxy/envoy-alpine:v1.9.1
-    command: ["envoy","-c","/config/upstream_envoy.json"]
+    image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
+    environment:
+      CONSUL_HTTP_ADDR: 10.5.0.2:8500
+      CONSUL_GRPC_ADDR: 10.5.0.2:8502
+      SERVICE_CONFIG: /config/expense.hcl
     volumes:
-      - "./circuit_breaking/envoy_config:/config"
+      - "./circuit_breaking/consul_config:/config"
+    command: ["consul", "connect", "envoy","-sidecar-for", "expense", "--", "-l", "debug"]
     network_mode: "service:expense"
 
   report:
@@ -51,10 +59,14 @@ services:
     ports:
       - 5002:5002
   report_proxy:
-    image: envoyproxy/envoy-alpine:v1.9.1
-    command: ["envoy","-c","/config/downstream_envoy.json"]
+    image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
+    environment:
+      CONSUL_HTTP_ADDR: 10.5.0.2:8500
+      CONSUL_GRPC_ADDR: 10.5.0.2:8502
+      SERVICE_CONFIG: /config/report.hcl
     volumes:
-      - "./circuit_breaking/envoy_config:/config"
+      - "./circuit_breaking/consul_config:/config"
+    command: ["consul", "connect", "envoy", "-admin-bind", "10.5.0.5:19000", "-sidecar-for", "report", "--", "-l", "debug"]
     network_mode: "service:report"
 
   jaeger:

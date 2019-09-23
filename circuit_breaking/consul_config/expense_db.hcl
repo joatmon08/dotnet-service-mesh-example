@@ -6,11 +6,11 @@ service {
 
   connect {
     sidecar_service {
-      port = 20000
+      port = 19000
 
       check {
         name     = "Connect Envoy Sidecar"
-        tcp      = "10.5.0.3:20000"
+        tcp      = "10.5.0.3:19000"
         interval = "10s"
       }
 
