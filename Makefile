@@ -3,6 +3,11 @@ build:
 	docker build -t joatmon08/expense:dotnet expense/
 	docker build -t joatmon08/report:dotnet -f report/Dockerfile .
 
+push:
+	docker push joatmon08/expense-db:mssql
+	docker push joatmon08/expense:dotnet
+	docker push joatmon08/report:dotnet
+
 jaeger-run:
 	docker run --rm -d -e 'COLLECTOR_ZIPKIN_HTTP_PORT=9411' -p 14268:14268 -p 9411:9411 -p 6831:6831/udp -p 6832:6832/udp -p 16686:16686 --name jaeger jaegertracing/all-in-one:latest --log-level=debug
 
