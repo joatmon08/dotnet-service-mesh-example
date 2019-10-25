@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Expense.Client;
-using Report.Contexts;
-using Report.Models;
+using System;
 using Microsoft.Extensions.Logging;
 using zipkin4net;
 using zipkin4net.Tracers.Zipkin;
@@ -28,7 +27,10 @@ namespace Report
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-      services.AddTransient<IReportContext>(s => new ReportContext(new ExpenseClient(Configuration.GetConnectionString("Expenses"))));
+      services.AddHttpClient<IExpenseClient, ExpenseClient>(client =>
+      {
+          client.BaseAddress = new Uri(Configuration.GetConnectionString("Expenses"));
+      });
       services.AddLogging(opt =>
       {
             opt.AddConsole();
