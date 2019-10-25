@@ -30,7 +30,7 @@ namespace Report
       services.AddHttpClient<IExpenseClient, ExpenseClient>(client =>
       {
           client.BaseAddress = new Uri(Configuration.GetConnectionString("Expenses"));
-      });
+      }).AddHttpMessageHandler(provider => TracingHandler.WithoutInnerHandler("report"));
       services.AddLogging(opt =>
       {
             opt.AddConsole();

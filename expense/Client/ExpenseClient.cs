@@ -3,27 +3,25 @@ using System.Collections.Generic;
 using Expense.Models;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System;
 
 namespace Expense.Client
 {
   public class ExpenseClient : IExpenseClient
   {
-    string _url;
-    public static HttpClient client = new HttpClient();
-
-    public ExpenseClient(string url)
+    private readonly HttpClient _httpClient;
+    public ExpenseClient(HttpClient httpClient)
     {
-      _url = url;
+      _httpClient = httpClient;
     }
 
     public async Task<List<ExpenseItem>> GetExpensesForTrip(string tripId) {
-      var result = await client.GetStringAsync(_url + "/api/expense/trip/" + tripId).ConfigureAwait(false);
+      var result = await _httpClient.GetStringAsync(_httpClient.BaseAddress + "api/expense/trip/" + tripId).ConfigureAwait(false);
       return JsonConvert.DeserializeObject<List<ExpenseItem>>(result);
     }
 
     public async Task<string> GetExpenseVersion() {
-      var result = await client.GetStringAsync(_url + "/api").ConfigureAwait(false);
+      var result = await _httpClient.GetStringAsync(_httpClient.BaseAddress + "api").ConfigureAwait(false);
       return result.ToString();
     }
   }
