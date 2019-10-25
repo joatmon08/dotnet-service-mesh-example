@@ -28,4 +28,4 @@ traffic-shaping:
 
 clean:
 	docker rm -f expenses-db
-	docker rm -f jaeger
+	docker rm -f zipkin
