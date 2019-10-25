@@ -6,10 +6,11 @@ config {
 
   envoy_extra_static_clusters_json = <<EOL
     {
-      "connect_timeout": "1.000s",
+      "connect_timeout": "3.000s",
+      "dns_lookup_family": "V4_ONLY",
       "lb_policy": "ROUND_ROBIN",
       "load_assignment": {
-          "cluster_name": "zipkin",
+          "cluster_name": "jaeger_9411",
           "endpoints": [
               {
                   "lb_endpoints": [
@@ -17,8 +18,9 @@ config {
                           "endpoint": {
                               "address": {
                                   "socket_address": {
-                                      "address": "zipkin",
-                                      "port_value": 9411
+                                      "address": "jaeger",
+                                      "port_value": 9411,
+                                      "protocol": "TCP"
                                   }
                               }
                           }
@@ -27,7 +29,7 @@ config {
               }
           ]
       },
-      "name": "zipkin",
+      "name": "jaeger_9411",
       "type": "STRICT_DNS"
     }
   EOL
@@ -36,7 +38,7 @@ config {
     {
         "http": {
             "config": {
-                "collector_cluster": "zipkin",
+                "collector_cluster": "jaeger_9411",
                 "collector_endpoint": "/api/v1/spans"
             },
             "name": "envoy.zipkin"
