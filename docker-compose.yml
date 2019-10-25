@@ -74,12 +74,10 @@ services:
   zipkin:
     image: openzipkin/zipkin
     ports:
-      - "9411:9411"
+      - 9411:9411
     networks:
       vpcbr:
         ipv4_address: 10.5.0.10
-    expose:
-      - "9411"
   
 networks:
   vpcbr:
