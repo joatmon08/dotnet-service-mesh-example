@@ -4,15 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Expense.Contexts;
 using Expense.Models;
-using OpenTracing;
-using Jaeger.Samplers;
-using Jaeger.Reporters;
-using Jaeger.Senders;
-using Jaeger;
-using OpenTracing.Contrib.NetCore.CoreFx;
-using System;
+using zipkin4net;
+using zipkin4net.Tracers.Zipkin;
+using zipkin4net.Transport.Http;
+using zipkin4net.Middleware;
 
 namespace Expense
 {
@@ -33,30 +31,14 @@ namespace Expense
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
       services.AddScoped<IExpenseContext, ExpenseContext>();
       services.AddTransient<IVersionContext>(s => new VersionContext(Configuration.GetValue<string>("version")));
-      services.AddOpenTracing();
-      services.AddSingleton<ITracer>(serviceProvider =>
+      services.AddLogging(opt =>
       {
-        string serviceName = serviceProvider.GetRequiredService<IHostingEnvironment>().ApplicationName;
-        var sampler = new ConstSampler(sample: true);
-        var reporter = new RemoteReporter.Builder()
-                  .WithSender(new HttpSender(Configuration.GetConnectionString("Jaeger")))
-                  .Build();
-        var tracer = new Tracer.Builder(serviceName)
-          .WithSampler(sampler)
-          .WithReporter(reporter)
-          .Build();
-
-        return tracer;
-      });
-
-      services.Configure<HttpHandlerDiagnosticOptions>(options => 
-      { 
-        options.IgnorePatterns.Add(request => Configuration.GetConnectionString("Jaeger").Contains(request.RequestUri.ToString()));
+            opt.AddConsole();
       });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       if (env.IsDevelopment())
       {
@@ -67,6 +49,22 @@ namespace Expense
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
       }
+
+      var lifetime = app.ApplicationServices.GetService<IApplicationLifetime> ();
+      IStatistics statistics = new Statistics();
+
+      lifetime.ApplicationStarted.Register (() => {
+          TraceManager.SamplingRate = 1.0f;
+          var logger = new TracingLogger(loggerFactory, "zipkin4net");
+          var httpSender = new HttpZipkinSender(Configuration.GetConnectionString("Zipkin"), "application/json");
+          var tracer = new ZipkinTracer(httpSender, new JSONSpanSerializer (), statistics);
+          TraceManager.Trace128Bits = true;
+          TraceManager.RegisterTracer(tracer);
+          TraceManager.Start(logger);
+      });
+
+      lifetime.ApplicationStopped.Register(() => TraceManager.Stop());
+      app.UseTracing("expense");
 
       app.UseMvc();
     }
