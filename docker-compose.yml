@@ -71,21 +71,15 @@ services:
     command: ["consul", "connect", "envoy","-sidecar-for", "report-v1"]
     network_mode: "service:report"
 
-  jaeger:
-    image: jaegertracing/all-in-one:1.13
-    environment:
-      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+  zipkin:
+    image: openzipkin/zipkin
     ports:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14268:14268"
       - "9411:9411"
     networks:
       vpcbr:
         ipv4_address: 10.5.0.10
+    expose:
+      - "9411"
   
 networks:
   vpcbr:
