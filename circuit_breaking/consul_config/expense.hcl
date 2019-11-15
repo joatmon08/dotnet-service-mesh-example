@@ -6,18 +6,17 @@ service {
 
   connect {
     sidecar_service {
-      port = 19000
+      port = 20000
 
       check {
         name     = "Connect Envoy Sidecar"
-        tcp      = "10.5.0.4:19000"
+        tcp      = "10.5.0.4:20000"
         interval = "10s"
       }
 
       proxy {
         upstreams {
           destination_name   = "expense-db"
-          local_bind_address = "127.0.0.1"
           local_bind_port    = 1433
         }
       }
