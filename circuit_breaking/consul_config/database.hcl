@@ -1,6 +1,6 @@
 service {
-  name    = "expense-db"
-  id      = "expense-db"
+  name    = "database"
+  id      = "database"
   address = "10.5.0.3"
   port    = 1433
 

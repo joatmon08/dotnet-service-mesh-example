@@ -27,5 +27,5 @@ traffic-shaping:
 	while true; do curl localhost:5002/api/report/expense/version; echo ""; sleep 2; done
 
 clean:
-	docker rm -f expenses-db
-	docker rm -f zipkin
+	docker-compose -f docker-compose-circuit.yml down || true
+	docker-compose -f docker-compose-circuit.yml rm || true
