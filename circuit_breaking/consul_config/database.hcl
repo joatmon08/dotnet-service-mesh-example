@@ -13,8 +13,6 @@ service {
         tcp      = "10.5.0.3:20000"
         interval = "10s"
       }
-
-      proxy {}
     }
   }
 }

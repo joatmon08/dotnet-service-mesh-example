@@ -21,7 +21,7 @@ report-run:
 	(cd report && dotnet run)
 
 circuit-break:
-	ab -n 1000 -c 5 http://0.0.0.0:5001/api/expense
+	while true; do curl localhost:5002/api/report/trip/d7fd4bf6-aeb9-45a0-b671-85dfc4d09544; echo ""; sleep 1; done
 	
 traffic-shaping:
 	while true; do curl localhost:5002/api/report/expense/version; echo ""; sleep 2; done

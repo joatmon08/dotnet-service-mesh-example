@@ -48,26 +48,8 @@ services:
       SERVICE_CONFIG: /config/expense.hcl
     volumes:
       - "./circuit_breaking/consul_config:/config"
-    command: ["consul", "connect", "envoy", "-sidecar-for", "expense", "--", "-l", "trace"]
+    command: ["consul", "connect", "envoy", "-sidecar-for", "expense", "--", "-l", "debug"]
     network_mode: "service:expense"
-
-  # report:
-  #   image: joatmon08/report:dotnet
-  #   networks:
-  #     vpcbr:
-  #       ipv4_address: 10.5.0.5
-  #   ports:
-  #     - 5002:5002
-  # report_proxy:
-  #   image: joatmon08/consul-envoy:1.6.2-1.11.1
-  #   environment:
-  #     CONSUL_HTTP_ADDR: 10.5.0.2:8500
-  #     CONSUL_GRPC_ADDR: 10.5.0.2:8502
-  #     SERVICE_CONFIG: /config/report.hcl
-  #   volumes:
-  #     - "./circuit_breaking/consul_config:/config"
-  #   command: ["consul", "connect", "envoy", "-sidecar-for", "report", "--", "-l", "debug"]
-  #   network_mode: "service:report"
 
   jaeger:
     image: jaegertracing/all-in-one:1.13
