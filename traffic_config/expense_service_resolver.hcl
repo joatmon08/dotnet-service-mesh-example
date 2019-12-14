@@ -1,8 +1,6 @@
 kind = "service-resolver"
 name = "expense"
 
-# https://www.consul.io/api/health.html#filtering-2
-# Show Node.Meta demonstration showing performance testing a new instance type
 default_subset = "v1"
 
 subsets = {

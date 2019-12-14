@@ -2,7 +2,7 @@ version: "3.3"
 services:
 
   consul:
-    image: consul:1.6.1
+    image: consul:1.6.2
     command: ["consul","agent","-config-file=/config/consul-single-dc.hcl","-config-dir=/config"]
     volumes:
       - "./consul_config:/config"
@@ -23,7 +23,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Testing!123
   expensedb_proxy:
-    image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
+    image: joatmon08/consul-envoy:1.6.2-1.11.1
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
@@ -41,7 +41,7 @@ services:
     ports:
       - 5001:5001
   expense_proxy_v1:
-    image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
+    image: joatmon08/consul-envoy:1.6.2-1.11.1
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
@@ -61,7 +61,7 @@ services:
     ports:
       - 5002:5002
   report_proxy:
-    image: nicholasjackson/consul-envoy:v1.6.1-v0.10.0
+    image: joatmon08/consul-envoy:1.6.2-1.11.1
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
