@@ -23,6 +23,14 @@ namespace Expense
 
     public IConfiguration Configuration { get; }
 
+    private static ITracer ConfigureTracer(string connection)
+    {
+      IStatistics statistics = new Statistics();
+      TraceManager.SamplingRate = 1.0f;
+      var httpSender = new HttpZipkinSender(connection, "application/json");
+      return new ZipkinTracer(httpSender, new JSONSpanSerializer (), statistics);
+    }
+
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
@@ -54,10 +62,8 @@ namespace Expense
       IStatistics statistics = new Statistics();
 
       lifetime.ApplicationStarted.Register (() => {
-          TraceManager.SamplingRate = 1.0f;
           var logger = new TracingLogger(loggerFactory, "zipkin4net");
-          var httpSender = new HttpZipkinSender(Configuration.GetConnectionString("Zipkin"), "application/json");
-          var tracer = new ZipkinTracer(httpSender, new JSONSpanSerializer (), statistics);
+          var tracer = ConfigureTracer(Configuration.GetConnectionString("Zipkin"));
           TraceManager.Trace128Bits = true;
           TraceManager.RegisterTracer(tracer);
           TraceManager.Start(logger);

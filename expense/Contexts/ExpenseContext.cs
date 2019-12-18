@@ -4,6 +4,7 @@ using Expense.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using zipkin4net;
 
 namespace Expense.Contexts
 {
@@ -12,14 +13,23 @@ namespace Expense.Contexts
       public ExpenseContext(ExpenseDbContext context) : base(context)
       {
       }
+
       public async Task<ActionResult<IEnumerable<ExpenseItem>>> ListAsync()
       {
-          return await _context.ExpenseItems.ToListAsync();
+        return await _context.ExpenseItems.ToListAsync();
       }
 
       public async Task<ActionResult<IEnumerable<ExpenseItem>>> ListAsyncByTripId(string tripId)
       {
-        return await _context.ExpenseItems.Where(e => e.TripId == tripId).ToListAsync();
+        var parentTrace = Trace.Current;
+        var trace = parentTrace.Child();
+        trace.Record(Annotations.LocalOperationStart("database"));
+        trace.Record(Annotations.ServiceName("expense"));
+        trace.Record(Annotations.Tag("request", "list-expenses"));
+        trace.Record(Annotations.Rpc("SELECT"));
+        var items = await _context.ExpenseItems.Where(e => e.TripId == tripId).ToListAsync();
+        trace.Record(Annotations.LocalOperationStop());
+        return items;
       }
 
       public async Task<ExpenseItem> GetExpense(string id)

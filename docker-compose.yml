@@ -42,6 +42,7 @@ services:
       - 5001:5001
   expense_proxy_v1:
     image: joatmon08/consul-envoy:1.6.2-1.11.1
+    restart: always
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
