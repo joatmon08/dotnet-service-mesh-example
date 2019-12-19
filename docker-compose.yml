@@ -24,6 +24,7 @@ services:
       - SA_PASSWORD=Testing!123
   expensedb_proxy:
     image: joatmon08/consul-envoy:1.6.2-1.11.1
+    restart: always
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
@@ -63,6 +64,7 @@ services:
       - 5002:5002
   report_proxy:
     image: joatmon08/consul-envoy:1.6.2-1.11.1
+    restart: always
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
