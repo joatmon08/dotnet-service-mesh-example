@@ -22,7 +22,7 @@ service {
             envoy_cluster_json = <<EOL
               {
                 "@type": "type.googleapis.com/envoy.api.v2.Cluster",
-                "name": "expense.default.dc1.internal.aecbcf1a-75c4-15f1-47b5-ce2d42a2a0c9.consul",
+                "name": "expense.default.dc1.internal.CONSUL_FQDN",
                 "type": "EDS",
                 "eds_cluster_config": {
                   "eds_config": {
@@ -67,7 +67,7 @@ service {
                                     "prefix": "/"
                                   },
                                   "route": {
-                                    "cluster": "expense.default.dc1.internal.aecbcf1a-75c4-15f1-47b5-ce2d42a2a0c9.consul",
+                                    "cluster": "expense.default.dc1.internal.CONSUL_FQDN",
                                     "timeout": "60s",
                                     "retry_policy": {
                                       "retry_on": "5xx",
