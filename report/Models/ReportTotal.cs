@@ -1,5 +1,6 @@
 using Expense.Models;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Report.Models
 {
@@ -8,6 +9,8 @@ namespace Report.Models
         public string TripId { get; set; }
         public IList<ExpenseItem> Expenses { get; set; } = new List<ExpenseItem>();
         public decimal Total { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public decimal? Average { get; set; }
     }
 }

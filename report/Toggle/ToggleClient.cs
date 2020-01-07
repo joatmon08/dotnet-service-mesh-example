@@ -14,6 +14,9 @@ namespace Toggle
 
     public async Task<bool> GetToggleValue(string name) {
       var getPair = await _consulClient.KV.Get("toggles/" + name);
+      if (getPair.StatusCode == System.Net.HttpStatusCode.NotFound) {
+        return false;
+      }
       if (Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length) == "true") {
         return true;
       }

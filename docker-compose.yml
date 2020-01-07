@@ -75,6 +75,7 @@ services:
     network_mode: "service:report"
   report_agent:
     image: consul:1.6.2
+    restart: always
     command: ["consul","agent","-config-file=/config/agent.hcl","-config-dir=/config"]
     volumes:
       - "./report_config:/config"

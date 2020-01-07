@@ -51,7 +51,8 @@ namespace expense.Controllers
 
         if (_toggleClient.GetToggleValue("enable-average").Result) {
             decimal average = 0;
-            average = total / items.Count;
+            var num_items = items.Count == 0 ? 1 : items.Count;
+            average = total / num_items;
             return new ReportTotal {
                 TripId = tripId,
                 Total = total,
