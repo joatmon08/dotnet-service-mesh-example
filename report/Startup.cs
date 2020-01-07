@@ -10,6 +10,8 @@ using zipkin4net;
 using zipkin4net.Tracers.Zipkin;
 using zipkin4net.Transport.Http;
 using zipkin4net.Middleware;
+using Consul;
+using Toggle;
 
 
 namespace Report
@@ -31,6 +33,7 @@ namespace Report
       {
           client.BaseAddress = new Uri(Configuration.GetConnectionString("Expenses"));
       }).AddHttpMessageHandler(provider => TracingHandler.WithoutInnerHandler("report"));
+      services.AddTransient<IToggleClient>(s => new ToggleClient(new ConsulClient()));
       services.AddLogging(opt =>
       {
             opt.AddConsole();

@@ -4,6 +4,7 @@ using Report.Models;
 using Expense.Client;
 using System.Collections.Generic;
 using Expense.Models;
+using Toggle;
 
 namespace expense.Controllers
 {
@@ -13,10 +14,12 @@ namespace expense.Controllers
     public class ReportController : ControllerBase
     {
         private readonly IExpenseClient _client;
+        private readonly IToggleClient _toggleClient;
 
-        public ReportController(IExpenseClient client)
+        public ReportController(IExpenseClient client, IToggleClient toggleClient)
         {
             _client = client;
+            _toggleClient = toggleClient;
         }
 
         [HttpGet("expense/version")]
@@ -45,6 +48,18 @@ namespace expense.Controllers
         {
             total += item.Cost;
         }
+
+        if (_toggleClient.GetToggleValue("enable-average").Result) {
+            decimal average = 0;
+            average = total / items.Count;
+            return new ReportTotal {
+                TripId = tripId,
+                Total = total,
+                Average = average,
+                Expenses = items
+            };
+        }
+
         ReportTotal reportTotal = new ReportTotal
         {
             TripId = tripId,

@@ -73,6 +73,12 @@ services:
       - "./service_config:/config"
     command: ["consul", "connect", "envoy","-sidecar-for", "report-v1"]
     network_mode: "service:report"
+  report_agent:
+    image: consul:1.6.2
+    command: ["consul","agent","-config-file=/config/agent.hcl","-config-dir=/config"]
+    volumes:
+      - "./report_config:/config"
+    network_mode: "service:report"
 
   jaeger:
     image: jaegertracing/all-in-one:1.13

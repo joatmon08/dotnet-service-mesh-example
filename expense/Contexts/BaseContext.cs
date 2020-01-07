@@ -1,4 +1,3 @@
-using zipkin4net;
 namespace Expense.Contexts
 {
     public abstract class BaseContext

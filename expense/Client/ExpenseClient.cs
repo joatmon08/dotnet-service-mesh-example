@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Expense.Models;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System;
 
 namespace Expense.Client
 {

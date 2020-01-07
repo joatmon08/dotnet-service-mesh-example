@@ -36,6 +36,9 @@ traffic-config:
   CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_router.hcl
   CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_splitter.hcl
 
+add-toggle:
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-average true
+
 clean:
 	docker-compose -f docker-compose-circuit-report.yml down || true
 	docker-compose -f docker-compose-circuit.yml down || true
