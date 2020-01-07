@@ -78,7 +78,7 @@ services:
     restart: always
     command: ["consul","agent","-config-file=/config/agent.hcl","-config-dir=/config"]
     volumes:
-      - "./report_config:/config"
+      - "./consul_report_agent_config:/config"
     network_mode: "service:report"
 
   jaeger:
