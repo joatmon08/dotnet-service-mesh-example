@@ -49,24 +49,24 @@ namespace expense.Controllers
             total += item.Cost;
         }
 
-        if (_toggleClient.GetToggleValue("enable-average").Result) {
-            decimal average = 0;
-            var num_items = items.Count == 0 ? 1 : items.Count;
-            average = total / num_items;
-            return new ReportTotal {
-                TripId = tripId,
-                Total = total,
-                Average = average,
-                Expenses = items
-            };
-        }
-
         ReportTotal reportTotal = new ReportTotal
         {
             TripId = tripId,
             Total = total,
             Expenses = items
         };
+
+        if (_toggleClient.ToggleForDatacenter().Result) {
+            reportTotal.NumberOfExpenses = items.Count;
+        }
+
+        if (_toggleClient.GetToggleValue("enable-average").Result) {
+            decimal average = 0;
+            var num_items = items.Count == 0 ? 1 : items.Count;
+            average = total / num_items;
+            reportTotal.Average = average;
+        }
+
         return reportTotal;
         }
     }

@@ -42,6 +42,9 @@ toggle-on:
 toggle-off:
 	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-average false
 
+toggle-datacenter:
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/datacenters dc2
+
 clean:
 	docker-compose -f docker-compose-circuit-report.yml down || true
 	docker-compose -f docker-compose-circuit.yml down || true

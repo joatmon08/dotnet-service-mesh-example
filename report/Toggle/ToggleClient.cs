@@ -22,5 +22,15 @@ namespace Toggle
       }
       return false;
     }
+
+    public async Task<bool> ToggleForDatacenter() {
+      var getPair = await _consulClient.KV.Get("toggles/datacenters");
+      if (getPair.StatusCode == System.Net.HttpStatusCode.NotFound) {
+        return false;
+      }
+      var datacenterList = Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length);
+      var getDatacenters = await _consulClient.Catalog.Datacenters();
+      return datacenterList.Contains(getDatacenters.Response[0]);
+    }
   }
 }
