@@ -36,11 +36,15 @@ traffic-config:
   CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_router.hcl
   CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_splitter.hcl
 
+report-test:
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/report_service_resolver.hcl
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/report_service_router.hcl
+
 toggle-on:
-	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-average true
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-number-of-items true
 
 toggle-off:
-	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-average false
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-number-of-items false
 
 toggle-datacenter:
 	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/datacenters dc2

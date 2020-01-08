@@ -6,5 +6,6 @@ namespace Toggle
     {
           Task<bool> GetToggleValue(string name);
           Task<bool> ToggleForDatacenter();
+          Task<bool> ToggleForExperiment(string name);
     }
 }
