@@ -43,11 +43,7 @@ namespace expense.Controllers
 
     private ReportTotal CreateReport(string tripId, IList<ExpenseItem> items)
     {
-      decimal total = 0;
-      foreach (ExpenseItem item in items)
-      {
-        total += item.Cost;
-      }
+      decimal total = getTotal(items);
 
       ReportTotal reportTotal = new ReportTotal
       {
@@ -57,10 +53,31 @@ namespace expense.Controllers
       };
 
       addNumItems(reportTotal);
-
-      addAverage(reportTotal);
+      addTotalReimbursable(reportTotal, items);
 
       return reportTotal;
+    }
+
+    private decimal getTotal(IList<ExpenseItem> items)
+    {
+      decimal total = 0;
+      foreach (ExpenseItem item in items)
+      {
+        total += item.Cost;
+      }
+      return total;
+    }
+
+    private decimal getTotalReimbursable(IList<ExpenseItem> items) {
+      decimal reimbursable = 0;
+      foreach (ExpenseItem item in items)
+      {
+        if (item.Reimbursable == true)
+        {
+          reimbursable += item.Cost;
+        }
+      }
+      return reimbursable;
     }
 
     private void addNumItems(ReportTotal reportTotal)
@@ -71,12 +88,10 @@ namespace expense.Controllers
       }
     }
 
-    private void addAverage(ReportTotal reportTotal)
+    private void addTotalReimbursable(ReportTotal reportTotal, IList<ExpenseItem> items)
     {
-      if (_toggleClient.ToggleForExperiment("expense").Result)
-      {
-        var numItems = reportTotal.Expenses.Count == 0 ? 1 : reportTotal.Expenses.Count;
-        reportTotal.Average = reportTotal.Total / numItems;
+      if (_toggleClient.ToggleForExperiment("expense").Result) {
+        reportTotal.TotalReimbursable = getTotalReimbursable(items);;
       }
     }
   }

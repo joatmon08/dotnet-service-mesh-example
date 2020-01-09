@@ -14,6 +14,6 @@ namespace Report.Models
         public int? NumberOfExpenses { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public decimal? Average { get; set; }
+        public decimal? TotalReimbursable { get; set; }
     }
 }

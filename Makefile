@@ -32,13 +32,8 @@ traffic-test:
 	while true; do curl localhost:5002/api/report/expense/version; echo ""; sleep 2; done
 
 traffic-config:
-  CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_resolver.hcl
-  CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_router.hcl
-  CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_splitter.hcl
-
-report-test:
-	CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/report_service_resolver.hcl
-	CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/report_service_router.hcl
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_resolver.hcl
+	CONSUL_HTTP_ADDR=http://localhost:8500 consul config write traffic_config/expense_service_router.hcl
 
 toggle-on:
 	CONSUL_HTTP_ADDR=http://localhost:8500 consul kv put toggles/enable-number-of-items true

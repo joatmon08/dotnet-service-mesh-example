@@ -19,7 +19,7 @@ services:
     volumes:
       - "./service_config:/config"
       - "./traffic_config:/central_config"
-    command: ["consul", "connect", "envoy","-sidecar-for", "expense-v2"]
+    command: ["consul", "connect", "envoy","-sidecar-for", "expense-v2", "--", "-l", "error"]
     network_mode: "service:expense-v2"
   
 networks:

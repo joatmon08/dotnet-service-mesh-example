@@ -8,7 +8,6 @@ namespace Toggle
   public class ToggleClient : IToggleClient
   {
     private readonly ConsulClient _consulClient;
-    private readonly HttpClient _httpClient = new HttpClient();
     private readonly string _consulAddress;
     public ToggleClient(string consulAddress, ConsulClient consulClient)
     {
@@ -30,8 +29,9 @@ namespace Toggle
       return false;
     }
 
-    public async Task<bool> ToggleForExperiment(string name) {
-      HttpResponseMessage result = await _httpClient.GetAsync(_consulAddress + "/v1/config/service-router/" + name).ConfigureAwait(false);
+    public async Task<bool> ToggleForExperiment(string name)
+    {
+      HttpResponseMessage result = await new HttpClient().GetAsync(_consulAddress + "/v1/config/service-router/" + name).ConfigureAwait(false);
       if (result.StatusCode != System.Net.HttpStatusCode.OK)
       {
         return false;
