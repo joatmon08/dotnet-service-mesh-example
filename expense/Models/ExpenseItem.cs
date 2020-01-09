@@ -14,6 +14,6 @@ namespace Expense.Models
         public string Currency {get; set; }
 
         public DateTime? Date { get; set; }
-        public bool? Reimbursable { get; set; }
+        public bool Reimbursable { get; set; } = false;
     }
 }
