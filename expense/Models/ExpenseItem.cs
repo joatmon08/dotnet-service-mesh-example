@@ -13,6 +13,7 @@ namespace Expense.Models
         public decimal Cost { get; set; }
         public string Currency {get; set; }
 
-        public DateTime? Date {get; set; }
+        public DateTime? Date { get; set; }
+        public bool? Reimbursable { get; set; }
     }
 }

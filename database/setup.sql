@@ -8,6 +8,7 @@ CREATE TABLE ExpenseItems(
   TripId varchar(255) NULL,
   Cost money NULL,
   Currency varchar(255) NULL,
-  Date date NULL
+  Date date NULL,
+  Reimbursable bit NULL
 );
 GO
