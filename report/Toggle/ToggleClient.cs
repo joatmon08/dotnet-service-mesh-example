@@ -25,7 +25,8 @@ namespace Toggle
       {
         return false;
       }
-      return TransformToggleValueToBoolean(Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length));
+      var value = Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length);
+      return TransformToggleValueToBoolean(value);
     }
 
     bool TransformToggleValueToBoolean(string value) {
