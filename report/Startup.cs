@@ -33,7 +33,7 @@ namespace Report
       {
           client.BaseAddress = new Uri(Configuration.GetConnectionString("Expenses"));
       }).AddHttpMessageHandler(provider => TracingHandler.WithoutInnerHandler("report"));
-      services.AddTransient<IToggleClient>(s => new ToggleClient(Configuration.GetConnectionString("Consul"), new ConsulClient()));
+      services.AddTransient<IToggleClient>(s => new ToggleClient(Configuration.GetConnectionString("Consul"), new ConsulClient(), Configuration.GetConnectionString("ConsulTemplateFile")));
       services.AddLogging(opt =>
       {
             opt.AddConsole();

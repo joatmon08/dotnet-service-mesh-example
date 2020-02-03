@@ -2,6 +2,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Consul;
+using System.IO;
+using System;
 
 namespace Toggle
 {
@@ -9,24 +11,57 @@ namespace Toggle
   {
     private readonly ConsulClient _consulClient;
     private readonly string _consulAddress;
-    public ToggleClient(string consulAddress, ConsulClient consulClient)
+    private readonly string _consulTemplateFile;
+    public ToggleClient(string consulAddress, ConsulClient consulClient, string consulTemplateFile)
     {
       _consulClient = consulClient;
       _consulAddress = consulAddress;
+      _consulTemplateFile = consulTemplateFile;
     }
 
-    public async Task<bool> GetToggleValue(string name)
-    {
+    async Task <bool> GetConsulHTTPToggle(string name) {
       var getPair = await _consulClient.KV.Get("toggles/" + name);
       if (getPair.StatusCode != System.Net.HttpStatusCode.OK)
       {
         return false;
       }
-      if (Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length) == "true")
+      return TransformToggleValueToBoolean(Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length));
+    }
+
+    bool TransformToggleValueToBoolean(string value) {
+      if (value.Contains("true"))
       {
         return true;
       }
       return false;
+    }
+
+    async Task<string[]> ReadLines() {
+      try {
+        using (var reader = File.OpenText(_consulTemplateFile))
+        {
+            var fileText = await reader.ReadToEndAsync();
+            return fileText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        }
+      }
+      catch {
+        return new string[0];
+      }
+    }
+
+    async Task <bool> GetConsulTemplateToggle(string name) {
+      var lines = await ReadLines();
+      foreach (string line in lines) {
+        if (line.Contains(name)) {
+          return TransformToggleValueToBoolean(line);
+        }
+      }
+      return false;
+    }
+
+    public async Task<bool> GetToggleValue(string name)
+    {
+      return await GetConsulTemplateToggle(name);
     }
 
     public async Task<bool> ToggleForExperiment(string name)

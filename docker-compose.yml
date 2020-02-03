@@ -62,6 +62,8 @@ services:
         ipv4_address: 10.5.0.5
     ports:
       - 5002:5002
+    volumes:
+      - "./report:/etc/report"
   report_proxy:
     image: joatmon08/consul-envoy:1.6.2-1.11.1
     restart: always
@@ -80,6 +82,28 @@ services:
     volumes:
       - "./consul_report_agent_config:/config"
     network_mode: "service:report"
+  
+  consul_template:
+    image: hashicorp/consul-template:light
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.11
+    environment:
+      CONSUL_HTTP_ADDR: 10.5.0.2:8500
+      CT_LOCAL_CONFIG: |
+        template {
+          contents = <<EOH
+        {{ range ls "toggles" }}
+        {{ .Key }}={{ .Value }}{{ end }}
+        EOH
+          destination = "/etc/report/toggles"
+          wait {
+            min = "2s"
+            max = "5s"
+          }
+        }
+    volumes:
+      - "./report:/etc/report"
 
   jaeger:
     image: jaegertracing/all-in-one:1.13
