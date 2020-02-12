@@ -1,5 +1,7 @@
 # Service Mesh Examples for .NET
 
+> This repository has been consolidated to github.com/joatmon08/expense-report.
+
 Examples that use Consul Service Mesh for .NET services.
 
 There are three services:
